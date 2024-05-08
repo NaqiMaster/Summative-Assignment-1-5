@@ -14,8 +14,8 @@ namespace Summative_Assignment_1_5
     public class Game1 : Game
     {
         Screen screen;
-        Rectangle window, Exit, Continue, mario;
-        Texture2D introScreen, textureExit, contentScreen, marioLeft, marioRight;
+        Rectangle window, Exit, Continue, mario, goldCoinRect;
+        Texture2D introScreen, textureExit, contentScreen, marioLeft, marioRight, goldCoin,marioCurrent, marioStraight;
         MouseState mouseState;
         SpriteFont introTitleFont,introDescription,exitText;
         Vector2 marioSpeed;
@@ -39,15 +39,16 @@ namespace Summative_Assignment_1_5
             // TODO: Add your initialization logic here
 
             screen = Screen.Intro;
-            seconds = 0;
+            seconds = 0f;
 
             marioTextures.Add(marioLeft);
             marioTextures.Add(marioRight);
 
+            goldCoinRect = new Rectangle(480, 250, 50, 50);
             Continue = new Rectangle(50, 350, 210, 60);
             Exit = new Rectangle(50,420,210,60);
             window = new Rectangle(0, 0, 900, 500);
-            mario = new Rectangle(0, 350, 100, 100);
+            mario = new Rectangle(0, 380, 70, 70);
             marioSpeed = new Vector2 (2,0);
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
@@ -68,6 +69,9 @@ namespace Summative_Assignment_1_5
             contentScreen = Content.Load<Texture2D>("SuperMarioBackground");
             marioLeft = Content.Load<Texture2D>("MarioLeft");
             marioRight = Content.Load<Texture2D>("MarioRight");
+            goldCoin = Content.Load<Texture2D>("GoldCoin");
+            marioStraight = Content.Load<Texture2D>("MarioStraight");
+            marioCurrent = Content.Load<Texture2D>("MarioRight");
 
 
             // TODO: use this.Content to load your game content here
@@ -75,6 +79,7 @@ namespace Summative_Assignment_1_5
 
         protected override void Update(GameTime gameTime)
         {
+
             mouseState = Mouse.GetState();
 
             if (screen == Screen.Intro)
@@ -93,8 +98,35 @@ namespace Summative_Assignment_1_5
             }
             else if (screen == Screen.Content)
             {
+                seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
                 mario.X += (int)marioSpeed.X;
                 mario.Y += (int)marioSpeed.Y;
+
+                if (seconds >= 3)
+                {
+                    marioCurrent = marioStraight;
+                    marioSpeed.X = 0;
+                    marioSpeed.Y = -3;
+                }
+
+                if (seconds >= 3.8)
+                {
+                    marioCurrent = marioRight;
+                    marioSpeed.X = 2;                  
+                    marioSpeed.Y = 0;
+                  
+                }
+                if (mario.Intersects(goldCoinRect))
+                {
+                    marioSpeed.X = 0;
+                    marioSpeed.Y = 0;
+                    goldCoinRect.Location = new Point(50, 50);
+
+                }
+
+
+
                 //Logic for animations
             }
             else if (screen == Screen.End)
@@ -133,7 +165,8 @@ namespace Summative_Assignment_1_5
             {
                 _spriteBatch.Begin();
                 _spriteBatch.Draw(contentScreen, window, Color.White);
-                _spriteBatch.Draw(marioRight, mario, Color.White);
+                _spriteBatch.Draw(marioCurrent, mario, Color.White);
+                _spriteBatch.Draw(goldCoin, goldCoinRect,Color.White);
 
                 _spriteBatch.End();
             }
