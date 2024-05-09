@@ -2,23 +2,45 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 
 namespace Summative_Assignment_1_5
 {
     enum Screen
     {
         Intro,
-        Content,
+        MainAnimation,
         End
     }
+
+    enum MarioPhase
+    {
+        InitialRun,
+        Jumping1, 
+        RunningRight1,
+        HitCoin,
+        bowserJump,
+        bowserStop,
+        marioThrow
+    }
+   /*  enum BowserPhase
+    {
+        bowserJump,
+        bowserStop
+    }*/
+
     public class Game1 : Game
     {
         Screen screen;
-        Rectangle window, Exit, Continue, mario, goldCoinRect;
-        Texture2D introScreen, textureExit, contentScreen, marioLeft, marioRight, goldCoin,marioCurrent, marioStraight;
+        MarioPhase marioPhase;
+       // BowserPhase bowserPhase;
+
+        Rectangle window, Exit, Continue, mario, goldCoinRect,bowserRect,redShellRect;
+        Texture2D introScreen, textureExit, contentScreen, marioLeft, marioRight,
+            goldCoin,marioCurrent, marioStraight,bowser,marioThrow,redShell;
         MouseState mouseState;
         SpriteFont introTitleFont,introDescription,exitText;
-        Vector2 marioSpeed;
+        Vector2 marioSpeed, bowserSpeed,redShellSpeed;
         List <Texture2D> marioTextures = new List<Texture2D>();
         float seconds;
 
@@ -39,11 +61,13 @@ namespace Summative_Assignment_1_5
             // TODO: Add your initialization logic here
 
             screen = Screen.Intro;
+            marioPhase = MarioPhase.InitialRun;
             seconds = 0f;
 
             marioTextures.Add(marioLeft);
             marioTextures.Add(marioRight);
 
+            
             goldCoinRect = new Rectangle(480, 250, 50, 50);
             Continue = new Rectangle(50, 350, 210, 60);
             Exit = new Rectangle(50,420,210,60);
@@ -72,6 +96,9 @@ namespace Summative_Assignment_1_5
             goldCoin = Content.Load<Texture2D>("GoldCoin");
             marioStraight = Content.Load<Texture2D>("MarioStraight");
             marioCurrent = Content.Load<Texture2D>("MarioRight");
+            bowser = Content.Load<Texture2D>("Bowser");
+            marioThrow = Content.Load < Texture2D>("marioThrowing");
+            redShell = Content.Load<Texture2D>("redShell");
 
 
             // TODO: use this.Content to load your game content here
@@ -92,38 +119,93 @@ namespace Summative_Assignment_1_5
                     }
                     if (Continue.Contains(mouseState.X,mouseState.Y))
                     {
-                        screen = Screen.Content;
+                        screen = Screen.MainAnimation;
                     }
                 }
             }
-            else if (screen == Screen.Content)
+            else if (screen == Screen.MainAnimation)
             {
                 seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 mario.X += (int)marioSpeed.X;
                 mario.Y += (int)marioSpeed.Y;
 
-                if (seconds >= 3)
-                {
-                    marioCurrent = marioStraight;
-                    marioSpeed.X = 0;
-                    marioSpeed.Y = -3;
-                }
+                bowserRect.X += (int)bowserSpeed.X;
+                bowserRect.Y += (int)bowserSpeed.Y;
 
-                if (seconds >= 3.8)
-                {
-                    marioCurrent = marioRight;
-                    marioSpeed.X = 2;                  
-                    marioSpeed.Y = 0;
-                  
-                }
-                if (mario.Intersects(goldCoinRect))
-                {
-                    marioSpeed.X = 0;
-                    marioSpeed.Y = 0;
-                    goldCoinRect.Location = new Point(50, 50);
+                redShellRect.X += (int)redShellSpeed.X;
+                redShellRect.Y += (int)redShellSpeed.Y;
 
+                if (marioPhase == MarioPhase.InitialRun)
+                {
+                    marioSpeed.X = 2;
+                    marioSpeed.Y = 0;
+                    marioPhase = MarioPhase.Jumping1;
                 }
+                else if (marioPhase == MarioPhase.Jumping1)
+                {
+                    if (seconds >= 3)
+                    {
+                        marioCurrent = marioStraight;
+                        marioSpeed.X = 0;
+                        marioSpeed.Y = -3;
+                        marioPhase = MarioPhase.RunningRight1;
+                    }
+                }
+                else if(marioPhase == MarioPhase.RunningRight1)
+                {
+                    if (seconds >= 3.8 && !mario.Intersects(goldCoinRect))
+                    {
+                        marioCurrent = marioRight;
+                        marioSpeed.X = 2;
+                        marioSpeed.Y = 0;
+                        marioPhase = MarioPhase.HitCoin;
+                    }
+                }
+                else if(marioPhase == MarioPhase.HitCoin)
+                {
+                    if (mario.Intersects(goldCoinRect))
+                    {
+                        marioSpeed.X = 0;
+                        marioSpeed.Y = 0;
+                        goldCoinRect = new Rectangle(0,0,0, 0);
+                        marioCurrent = marioStraight;
+                        bowserRect = new Rectangle(730, 250, 150, 150);
+                        marioPhase = MarioPhase.bowserJump;
+
+                    }
+                }
+                else if (marioPhase == MarioPhase.bowserJump)
+                {
+
+                    bowserSpeed.X = -2;
+                    bowserSpeed.Y = -3;
+
+                    if (bowserRect.Y <= 150)
+                    {
+                        bowserSpeed.X = -2;
+                        bowserSpeed.Y = 0;
+                    }
+                    if (bowserRect.X == 550)
+                    {
+                        marioPhase = MarioPhase.bowserStop;
+                    }
+                }
+                else if (marioPhase == MarioPhase.bowserStop)
+                {
+                    bowserSpeed.X = 0;
+                    bowserSpeed.Y = 0;
+                    marioPhase = MarioPhase.marioThrow;
+                }
+                else if (marioPhase == MarioPhase.marioThrow)
+                {
+                    marioCurrent = marioThrow;
+                    redShellRect = new Rectangle(450, 270, 30, 30);
+                    redShellSpeed.X = 2;
+                    redShellSpeed.Y = 0;
+                }
+               
+
 
 
 
@@ -161,12 +243,22 @@ namespace Summative_Assignment_1_5
 
                 _spriteBatch.End();
             }
-            else if (screen == Screen.Content)
+            else if (screen == Screen.MainAnimation)
             {
                 _spriteBatch.Begin();
                 _spriteBatch.Draw(contentScreen, window, Color.White);
                 _spriteBatch.Draw(marioCurrent, mario, Color.White);
                 _spriteBatch.Draw(goldCoin, goldCoinRect,Color.White);
+
+                if (marioPhase == MarioPhase.HitCoin || marioPhase == MarioPhase.bowserJump|| marioPhase == MarioPhase.bowserStop
+                    || marioPhase == MarioPhase.marioThrow)
+                {
+                    _spriteBatch.Draw(bowser,bowserRect,Color.White);
+                }
+                if (marioPhase == MarioPhase.marioThrow)
+                {
+                    _spriteBatch.Draw(redShell, redShellRect, Color.White);
+                }
 
                 _spriteBatch.End();
             }
