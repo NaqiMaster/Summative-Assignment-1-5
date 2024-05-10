@@ -10,7 +10,7 @@ namespace Summative_Assignment_1_5
     {
         Intro,
         MainAnimation,
-        End
+        End,
     }
 
     enum MarioPhase
@@ -21,7 +21,7 @@ namespace Summative_Assignment_1_5
         HitCoin,
         bowserJump,
         bowserStop,
-        marioThrow
+        marioThrow,
     }
    /*  enum BowserPhase
     {
@@ -29,16 +29,20 @@ namespace Summative_Assignment_1_5
         bowserStop
     }*/
 
+
+
+
     public class Game1 : Game
     {
         Screen screen;
         MarioPhase marioPhase;
        // BowserPhase bowserPhase;
 
-        Rectangle window, Exit, Continue, mario, goldCoinRect,bowserRect,redShellRect;
-        Texture2D introScreen, textureExit, contentScreen, marioLeft, marioRight,
-            goldCoin,marioCurrent, marioStraight,bowser,marioThrow,redShell;
-        MouseState mouseState;
+        Rectangle window, introExit, introContinue, mario, goldCoinRect,bowserRect,redShellRect,
+            endExit,endRestart;
+        Texture2D introScreen, textureExit, contentScreen, marioLeftTexture, marioRightTexture,
+            goldCoinTexture,marioCurrent, marioStraight,bowser,marioThrow,redShell,bowserKnockedTexture;
+        MouseState mouseState, mouseState1;
         SpriteFont introTitleFont,introDescription,exitText;
         Vector2 marioSpeed, bowserSpeed,redShellSpeed;
         List <Texture2D> marioTextures = new List<Texture2D>();
@@ -47,6 +51,7 @@ namespace Summative_Assignment_1_5
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        bool drawBowser;
 
         public Game1()
         {
@@ -64,18 +69,24 @@ namespace Summative_Assignment_1_5
             marioPhase = MarioPhase.InitialRun;
             seconds = 0f;
 
-            marioTextures.Add(marioLeft);
-            marioTextures.Add(marioRight);
+            marioTextures.Add(marioLeftTexture);
+            marioTextures.Add(marioRightTexture);
 
             
             goldCoinRect = new Rectangle(480, 250, 50, 50);
-            Continue = new Rectangle(50, 350, 210, 60);
-            Exit = new Rectangle(50,420,210,60);
+            introContinue = new Rectangle(50, 350, 210, 60);
+            introExit = new Rectangle(50,420,210,60);
+            endExit = new Rectangle(50,200,210,60);
+            endRestart = new Rectangle(50,130, 210, 60);
             window = new Rectangle(0, 0, 900, 500);
             mario = new Rectangle(0, 380, 70, 70);
             marioSpeed = new Vector2 (2,0);
+            redShellRect = new Rectangle(450, 270, 30, 30);
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
+
+            drawBowser = false;
+
             _graphics.ApplyChanges();
 
             base.Initialize();
@@ -91,15 +102,15 @@ namespace Summative_Assignment_1_5
             textureExit = Content.Load<Texture2D>("gold");
             exitText = Content.Load<SpriteFont>("exitText");
             contentScreen = Content.Load<Texture2D>("SuperMarioBackground");
-            marioLeft = Content.Load<Texture2D>("MarioLeft");
-            marioRight = Content.Load<Texture2D>("MarioRight");
-            goldCoin = Content.Load<Texture2D>("GoldCoin");
+            marioLeftTexture = Content.Load<Texture2D>("marioLeft");
+            marioRightTexture = Content.Load<Texture2D>("marioRight");
+            goldCoinTexture = Content.Load<Texture2D>("goldCoin");
             marioStraight = Content.Load<Texture2D>("MarioStraight");
-            marioCurrent = Content.Load<Texture2D>("MarioRight");
+            marioCurrent = Content.Load<Texture2D>("marioRight");
             bowser = Content.Load<Texture2D>("Bowser");
             marioThrow = Content.Load < Texture2D>("marioThrowing");
             redShell = Content.Load<Texture2D>("redShell");
-
+            bowserKnockedTexture = Content.Load<Texture2D>("bowserKnocked");
 
             // TODO: use this.Content to load your game content here
         }
@@ -113,11 +124,11 @@ namespace Summative_Assignment_1_5
             {
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    if (Exit.Contains(mouseState.X, mouseState.Y))
+                    if (introExit.Contains(mouseState.X, mouseState.Y))
                     {
                         screen = Screen.End;
                     }
-                    if (Continue.Contains(mouseState.X,mouseState.Y))
+                    if (introContinue.Contains(mouseState.X, mouseState.Y))
                     {
                         screen = Screen.MainAnimation;
                     }
@@ -133,8 +144,6 @@ namespace Summative_Assignment_1_5
                 bowserRect.X += (int)bowserSpeed.X;
                 bowserRect.Y += (int)bowserSpeed.Y;
 
-                redShellRect.X += (int)redShellSpeed.X;
-                redShellRect.Y += (int)redShellSpeed.Y;
 
                 if (marioPhase == MarioPhase.InitialRun)
                 {
@@ -152,26 +161,27 @@ namespace Summative_Assignment_1_5
                         marioPhase = MarioPhase.RunningRight1;
                     }
                 }
-                else if(marioPhase == MarioPhase.RunningRight1)
+                else if (marioPhase == MarioPhase.RunningRight1)
                 {
                     if (seconds >= 3.8 && !mario.Intersects(goldCoinRect))
                     {
-                        marioCurrent = marioRight;
+                        marioCurrent = marioRightTexture;
                         marioSpeed.X = 2;
                         marioSpeed.Y = 0;
                         marioPhase = MarioPhase.HitCoin;
                     }
                 }
-                else if(marioPhase == MarioPhase.HitCoin)
+                else if (marioPhase == MarioPhase.HitCoin)
                 {
                     if (mario.Intersects(goldCoinRect))
                     {
                         marioSpeed.X = 0;
                         marioSpeed.Y = 0;
-                        goldCoinRect = new Rectangle(0,0,0, 0);
+                        goldCoinRect = new Rectangle(0, 0, 0, 0);
                         marioCurrent = marioStraight;
                         bowserRect = new Rectangle(730, 250, 150, 150);
                         marioPhase = MarioPhase.bowserJump;
+                        drawBowser = true;
 
                     }
                 }
@@ -196,25 +206,43 @@ namespace Summative_Assignment_1_5
                     bowserSpeed.X = 0;
                     bowserSpeed.Y = 0;
                     marioPhase = MarioPhase.marioThrow;
+                    marioCurrent = marioThrow;
+                    redShellRect = new Rectangle(450, 270, 30, 30);
+                    redShellSpeed.X = 10;
+                    redShellSpeed.Y = 0;
+
                 }
                 else if (marioPhase == MarioPhase.marioThrow)
                 {
-                    marioCurrent = marioThrow;
-                    redShellRect = new Rectangle(450, 270, 30, 30);
-                    redShellSpeed.X = 2;
-                    redShellSpeed.Y = 0;
+                    redShellRect.Offset(redShellSpeed);
+                    bowserRect.X += 5;
+
+
+                    if (bowserRect.Contains(redShellRect.X, redShellRect.Y))
+                    {
+                        redShellRect = new Rectangle(0, 0, 0, 0);
+                        marioCurrent = marioStraight;
+
+                    }
+
                 }
-               
-
-
-
-
-                //Logic for animations
             }
             else if (screen == Screen.End)
             {
-                //End Page, 2 buttons (One to restart, one to exit)
+                mouseState1 = Mouse.GetState();
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    if (endExit.Contains(mouseState1.X, mouseState1.Y))
+                    {
+                        Exit();
+                    }
+                    if (endRestart.Contains(mouseState1.X, mouseState1.Y))
+                    {
+                        screen = Screen.MainAnimation;
+                    }
+                }
             }
+
 
                 if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                     Exit();
@@ -229,43 +257,46 @@ namespace Summative_Assignment_1_5
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            _spriteBatch.Begin();
+
             if (screen == Screen.Intro)
             {
-                _spriteBatch.Begin();
                 _spriteBatch.Draw(introScreen, window, Color.White);
                 _spriteBatch.DrawString(introTitleFont, ("Super Mario"), new Vector2(5, 10), Color.Black);
                 _spriteBatch.DrawString(introDescription, ("Fight for the Throne"), new Vector2(80, 70), Color.White);
-                _spriteBatch.Draw(textureExit, Exit, Color.White);
-                _spriteBatch.Draw(textureExit, Continue, Color.White);
+                _spriteBatch.Draw(textureExit, introExit, Color.White);
+                _spriteBatch.Draw(textureExit, introContinue, Color.White);
                 _spriteBatch.DrawString(exitText,"Exit", new Vector2(110,440),Color.Black);
                 _spriteBatch.DrawString(exitText, "Continue", new Vector2(60, 370), Color.Black);
-
-
-                _spriteBatch.End();
             }
             else if (screen == Screen.MainAnimation)
             {
-                _spriteBatch.Begin();
                 _spriteBatch.Draw(contentScreen, window, Color.White);
                 _spriteBatch.Draw(marioCurrent, mario, Color.White);
-                _spriteBatch.Draw(goldCoin, goldCoinRect,Color.White);
+                _spriteBatch.Draw(goldCoinTexture, goldCoinRect,Color.White);
 
-                if (marioPhase == MarioPhase.HitCoin || marioPhase == MarioPhase.bowserJump|| marioPhase == MarioPhase.bowserStop
-                    || marioPhase == MarioPhase.marioThrow)
+               if (drawBowser)
                 {
                     _spriteBatch.Draw(bowser,bowserRect,Color.White);
+
                 }
                 if (marioPhase == MarioPhase.marioThrow)
                 {
                     _spriteBatch.Draw(redShell, redShellRect, Color.White);
-                }
 
-                _spriteBatch.End();
+                }
             }
             else if (screen == Screen.End)
             {
-
+                _spriteBatch.Draw(introScreen, window, Color.White);
+                _spriteBatch.Draw(textureExit, endExit, Color.White);
+                _spriteBatch.Draw(textureExit, endRestart, Color.White);
+                _spriteBatch.DrawString(exitText, "Exit", new Vector2(110, 220), Color.Black);
+                _spriteBatch.DrawString(exitText, "Restart", new Vector2(70, 150), Color.Black);
             }
+
+            _spriteBatch.End();
+
 
 
             // TODO: Add your drawing code here
