@@ -25,18 +25,6 @@
 /processorParam:TextureFormat=Color
 /build:Bowser.png
 
-#begin bowserKnocked.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:bowserKnocked.png
-
 #begin exitText.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -82,7 +70,7 @@
 /processorParam:TextureFormat=Compressed
 /build:introTitle.spritefont
 
-#begin marioIntroScreen.jpg
+#begin marioTextureExcited.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -92,9 +80,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:marioIntroScreen.jpg
+/build:marioTextureExcited.png
 
-#begin MarioLeft.png
+#begin marioTextureRun.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -104,9 +92,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:MarioLeft.png
+/build:marioTextureRun.png
 
-#begin MarioRight.png
+#begin marioTextureStand.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -116,9 +104,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:MarioRight.png
+/build:marioTextureStand.png
 
-#begin marioStraight.webp
+#begin marioTextureThrow.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -128,9 +116,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:marioStraight.webp
+/build:marioTextureThrow.png
 
-#begin marioThrowing.png
+#begin marioTextureUp.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -140,7 +128,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:marioThrowing.png
+/build:marioTextureUp.png
 
 #begin redShell.webp
 /importer:TextureImporter
@@ -177,4 +165,23 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:SuperMarioBackground.jpg
+
+#begin textBubble.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textBubble.png
+
+#begin victorySpeech.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:victorySpeech.spritefont
 
