@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -24,11 +25,7 @@ namespace Summative_Assignment_1_5
         marioThrow,
         Victory
     }
-   /*  enum BowserPhase
-    {
-        bowserJump,
-        bowserStop
-    }*/
+
 
 
 
@@ -37,16 +34,17 @@ namespace Summative_Assignment_1_5
     {
         Screen screen;
         MarioPhase marioPhase;
-       // BowserPhase bowserPhase;
-
+        SoundEffect marioIntroSong;
+        SoundEffectInstance marioIntroSongInstance;
         Rectangle window, introExit, introContinue, mario, goldCoinRect,bowserRect,redShellRect,
-            endExit,endRestart,textBubbleRect;
+            endExit,textBubbleRect;
         Texture2D introScreen, textureExit, contentScreen,marioTextureRight, marioTextureExcited,textBubble,
-            goldCoinTexture,marioTextureCurrent, marioTextureStraight,bowserTexture,marioTextureThrow,redShellTexture,marioTextureUp;
+            goldCoinTexture,marioTextureCurrent, marioTextureStraight,bowserTexture,marioTextureThrow,redShellTexture,marioTextureUp
+            ,endScreen;
         MouseState mouseState, mouseState1;
         SpriteFont introTitleFont,introDescription,exitText,victorySpeech;
         Vector2 marioSpeed, bowserSpeed,redShellSpeed;
-        float seconds;
+        float seconds, seconds1;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -68,14 +66,14 @@ namespace Summative_Assignment_1_5
             screen = Screen.Intro;
             marioPhase = MarioPhase.InitialRun;
             seconds = 0f;
+            seconds1 = 0f;
 
 
             textBubbleRect = new Rectangle(270,180,200,50);
             goldCoinRect = new Rectangle(480, 250, 50, 50);
             introContinue = new Rectangle(50, 350, 210, 60);
             introExit = new Rectangle(50,420,210,60);
-            endExit = new Rectangle(50,200,210,60);
-            endRestart = new Rectangle(50,130, 210, 60);
+            endExit = new Rectangle(670,50,210,60);
             window = new Rectangle(0, 0, 900, 500);
             mario = new Rectangle(0, 380, 70, 70);
             marioSpeed = new Vector2 (2,0);
@@ -99,6 +97,8 @@ namespace Summative_Assignment_1_5
             introDescription = Content.Load<SpriteFont>("introDescription");
             textureExit = Content.Load<Texture2D>("gold");
             exitText = Content.Load<SpriteFont>("exitText");
+            marioIntroSong = Content.Load<SoundEffect>("Mario Intro Song");
+            marioIntroSongInstance = marioIntroSong.CreateInstance();
 
             //Animation
             victorySpeech = Content.Load<SpriteFont>("victorySpeech");
@@ -115,6 +115,8 @@ namespace Summative_Assignment_1_5
             marioTextureExcited = Content.Load<Texture2D>("marioTextureExcited");
             textBubble = Content.Load<Texture2D>("textBubble");
 
+            endScreen = Content.Load<Texture2D>("marioEndScreen");
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -125,17 +127,24 @@ namespace Summative_Assignment_1_5
 
             if (screen == Screen.Intro)
             {
+                marioIntroSongInstance.Play();
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
                     if (introExit.Contains(mouseState.X, mouseState.Y))
                     {
                         screen = Screen.End;
+                        marioIntroSongInstance.Stop();
                     }
                     if (introContinue.Contains(mouseState.X, mouseState.Y))
                     {
                         screen = Screen.MainAnimation;
+                        marioIntroSongInstance.Stop();
                     }
                 }
+                if (marioIntroSongInstance.State == SoundState.Stopped)
+                    {
+                        screen = Screen.End;
+                    }
             }
             else if (screen == Screen.MainAnimation)
             {
@@ -235,6 +244,14 @@ namespace Summative_Assignment_1_5
                 else if (marioPhase == MarioPhase.Victory)
                 {
                     marioTextureCurrent = marioTextureExcited;
+                    seconds1 += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    if (seconds1 >=3)
+                    {
+                        screen = Screen.End;
+                        marioTextureCurrent = marioTextureExcited;
+                        mario.X = 50;
+                        mario.Y = 380;
+                    }
                 }
             }
             else if (screen == Screen.End)
@@ -245,10 +262,6 @@ namespace Summative_Assignment_1_5
                     if (endExit.Contains(mouseState1.X, mouseState1.Y))
                     {
                         Exit();
-                    }
-                    if (endRestart.Contains(mouseState1.X, mouseState1.Y))
-                    {
-                        screen = Screen.MainAnimation;
                     }
                 }
             }
@@ -304,11 +317,10 @@ namespace Summative_Assignment_1_5
             }
             else if (screen == Screen.End)
             {
-                _spriteBatch.Draw(introScreen, window, Color.White);
+                _spriteBatch.Draw(endScreen, window, Color.White);
                 _spriteBatch.Draw(textureExit, endExit, Color.White);
-                _spriteBatch.Draw(textureExit, endRestart, Color.White);
-                _spriteBatch.DrawString(exitText, "Exit", new Vector2(110, 220), Color.Black);
-                _spriteBatch.DrawString(exitText, "Restart", new Vector2(70, 150), Color.Black);
+                _spriteBatch.DrawString(exitText, "Exit", new Vector2(730, 70), Color.Black);
+                _spriteBatch.Draw(marioTextureExcited, mario, Color.White);
             }
 
             _spriteBatch.End();
