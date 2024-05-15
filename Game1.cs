@@ -34,8 +34,8 @@ namespace Summative_Assignment_1_5
     {
         Screen screen;
         MarioPhase marioPhase;
-        SoundEffect marioIntroSong;
-        SoundEffectInstance marioIntroSongInstance;
+        SoundEffect marioIntroSong, marioOutroSong, yeet, boom, yay, sneaky;
+        SoundEffectInstance marioIntroSongInstance, marioOutroSongInstance, yeetInstance, boomInstance, yayInstance, sneakyInstance;
         Rectangle window, introExit, introContinue, mario, goldCoinRect,bowserRect,redShellRect,
             endExit,textBubbleRect;
         Texture2D introScreen, textureExit, contentScreen,marioTextureRight, marioTextureExcited,textBubble,
@@ -78,6 +78,7 @@ namespace Summative_Assignment_1_5
             mario = new Rectangle(0, 380, 70, 70);
             marioSpeed = new Vector2 (2,0);
             redShellRect = new Rectangle(450, 270, 30, 30);
+
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
 
@@ -91,7 +92,7 @@ namespace Summative_Assignment_1_5
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            //intro screen
+            //Intro screen
             introScreen = Content.Load<Texture2D>("SuperMario");
             introTitleFont = Content.Load<SpriteFont>("introTitle");
             introDescription = Content.Load<SpriteFont>("introDescription");
@@ -115,6 +116,18 @@ namespace Summative_Assignment_1_5
             marioTextureExcited = Content.Load<Texture2D>("marioTextureExcited");
             textBubble = Content.Load<Texture2D>("textBubble");
 
+            yeet = Content.Load<SoundEffect>("Yeet Sound Effect");
+            yeetInstance = yeet.CreateInstance();
+            boom = Content.Load<SoundEffect>("Boom Sound Effect");
+            boomInstance = boom.CreateInstance();
+            yay = Content.Load<SoundEffect>("Yay Sound Effect");
+            yayInstance = yay.CreateInstance();
+            sneaky = Content.Load<SoundEffect>("Sneaky Sound Effect");
+            sneakyInstance = sneaky.CreateInstance();   
+
+            //End Screen
+            marioOutroSong = Content.Load<SoundEffect>("Mario Outro Song");
+            marioOutroSongInstance = marioOutroSong.CreateInstance();
             endScreen = Content.Load<Texture2D>("marioEndScreen");
 
             // TODO: use this.Content to load your game content here
@@ -128,6 +141,12 @@ namespace Summative_Assignment_1_5
             if (screen == Screen.Intro)
             {
                 marioIntroSongInstance.Play();
+
+                if (marioIntroSongInstance.State == SoundState.Stopped)
+                {
+                    screen = Screen.End;
+                }
+
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
                     if (introExit.Contains(mouseState.X, mouseState.Y))
@@ -135,16 +154,13 @@ namespace Summative_Assignment_1_5
                         screen = Screen.End;
                         marioIntroSongInstance.Stop();
                     }
-                    if (introContinue.Contains(mouseState.X, mouseState.Y))
+                    else if (introContinue.Contains(mouseState.X, mouseState.Y))
                     {
                         screen = Screen.MainAnimation;
                         marioIntroSongInstance.Stop();
                     }
+
                 }
-                if (marioIntroSongInstance.State == SoundState.Stopped)
-                    {
-                        screen = Screen.End;
-                    }
             }
             else if (screen == Screen.MainAnimation)
             {
@@ -159,6 +175,7 @@ namespace Summative_Assignment_1_5
 
                 if (marioPhase == MarioPhase.InitialRun)
                 {
+                    sneakyInstance.Play();
                     marioSpeed.X = 2;
                     marioSpeed.Y = 0;
                     marioPhase = MarioPhase.Jumping1;
@@ -187,6 +204,7 @@ namespace Summative_Assignment_1_5
                 {
                     if (mario.Intersects(goldCoinRect))
                     {
+                        sneakyInstance.Stop();
                         marioSpeed.X = 0;
                         marioSpeed.Y = 0;
                         goldCoinRect = new Rectangle(0, 0, 0, 0);
@@ -194,6 +212,8 @@ namespace Summative_Assignment_1_5
                         bowserRect = new Rectangle(730, 250, 150, 150);
                         marioPhase = MarioPhase.bowserJump;
                         drawBowser = true;
+
+                        boomInstance.Play();
 
                     }
                 }
@@ -223,6 +243,8 @@ namespace Summative_Assignment_1_5
                     redShellSpeed.X = 10;
                     redShellSpeed.Y = 0;
 
+                    yeetInstance.Play();
+
                 }
                 else if (marioPhase == MarioPhase.marioThrow)
                 {
@@ -233,6 +255,8 @@ namespace Summative_Assignment_1_5
                     if (bowserRect.Contains(redShellRect.X, redShellRect.Y))
                     {
                         redShellRect = new Rectangle(0, 0, 0, 0);
+                        yayInstance.Play();
+
                     }
 
                     if (bowserRect.X >= 950)
@@ -245,7 +269,7 @@ namespace Summative_Assignment_1_5
                 {
                     marioTextureCurrent = marioTextureExcited;
                     seconds1 += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    if (seconds1 >=3)
+                    if (seconds1 >=4)
                     {
                         screen = Screen.End;
                         marioTextureCurrent = marioTextureExcited;
@@ -256,6 +280,7 @@ namespace Summative_Assignment_1_5
             }
             else if (screen == Screen.End)
             {
+                marioOutroSongInstance.Play();
                 mouseState1 = Mouse.GetState();
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
@@ -263,6 +288,11 @@ namespace Summative_Assignment_1_5
                     {
                         Exit();
                     }
+                }
+
+                if (marioOutroSongInstance.State == SoundState.Stopped)
+                {
+                    Exit();
                 }
             }
 

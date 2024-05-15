@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Boom sound effect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Boom sound effect.wav
+
 #begin Bowser.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -75,6 +81,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Mario Intro Song.wav
+
+#begin Mario Outro Song.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Mario Outro Song.wav
 
 #begin marioEndScreen.jpg
 /importer:TextureImporter
@@ -160,6 +172,12 @@
 /processorParam:TextureFormat=Color
 /build:redShell.webp
 
+#begin Sneaky Sound Effect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sneaky Sound Effect.wav
+
 #begin SuperMario.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -202,4 +220,16 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:victorySpeech.spritefont
+
+#begin Yay Sound Effect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Yay Sound Effect.wav
+
+#begin Yeet Sound Effect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Yeet Sound Effect.wav
 
